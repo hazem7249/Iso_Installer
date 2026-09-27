@@ -1,365 +1,679 @@
-<!DOCTYPE html>
-<html lang="en">
+!DOCTYPE html>
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IsoInstaller beta test</title>
+  <title>IsoInstaller - OS ISO Repository</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    :root {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
-      --accent: #3b82f6;
-      --accent-hover: #2563eb;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border-color: #334155;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      padding: 40px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
+      background-color: #0b0f19;
+      background-image: 
+        radial-gradient(at 10% 10%, rgba(37, 99, 235, 0.15) 0px, transparent 50%),
+        radial-gradient(at 90% 80%, rgba(124, 58, 237, 0.12) 0px, transparent 50%);
+      background-attachment: fixed;
     }
-
-    .container {
-      width: 100%;
-      max-width: 800px;
+    .glass-card {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
-
-    h1 {
-      font-size: 2.25rem;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 40px;
-      letter-spacing: -0.025em;
+    .glass-card:hover {
+      border-color: rgba(59, 130, 246, 0.3);
     }
-
-    .accordion {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    .glass-nav {
+      background: rgba(11, 15, 25, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
-
-    .accordion-header {
-      width: 100%;
-      background: none;
-      border: none;
-      padding: 20px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: var(--text-main);
-      cursor: pointer;
-      text-align: left;
-      transition: background-color 0.2s ease;
+    .glow-title {
+      background: linear-gradient(135deg, #ffffff 0%, #93c5fd 50%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-
-    .accordion-header:hover {
-      background-color: rgba(255, 255, 255, 0.03);
-    }
-
-    .header-title-group {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .toggle-box {
-      width: 32px;
-      height: 32px;
-      border: 2px solid var(--border-color);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      font-weight: bold;
-      color: var(--accent);
-      background-color: rgba(59, 130, 246, 0.1);
-      transition: all 0.2s ease;
-    }
-
-    .accordion-header:hover .toggle-box {
-      border-color: var(--accent);
-    }
-
-    .header-text {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .main-title {
-      font-size: 1.15rem;
-      font-weight: 600;
-    }
-
-    .sub-title {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-    }
-
     .accordion-content {
-      max-height: 0;
+      transition: max-height 0.3s ease-out, opacity 0.2s ease-out;
       overflow: hidden;
-      transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
-      border-top: 1px solid transparent;
-    }
-
-    .accordion.active .accordion-content {
-      max-height: 3000px;
-      transition: max-height 0.5s ease-in-out;
-      border-top-color: var(--border-color);
-    }
-
-    .os-list {
-      padding: 16px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .os-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px;
-      background-color: rgba(15, 23, 42, 0.6);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-    }
-
-    .os-info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .os-title {
-      font-weight: 600;
-      font-size: 1rem;
-    }
-
-    .os-desc {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background-color: var(--accent);
-      color: white;
-      text-decoration: none;
-      padding: 10px 18px;
-      border-radius: 6px;
-      font-size: 0.875rem;
-      font-weight: 500;
-      transition: background-color 0.2s ease, transform 0.1s ease;
-    }
-
-    .btn:hover {
-      background-color: var(--accent-hover);
-    }
-
-    .btn:active {
-      transform: scale(0.98);
-    }
-
-    @media (max-width: 600px) {
-      .os-card {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-      }
-      .btn {
-        width: 100%;
-        justify-content: center;
-      }
     }
   </style>
 </head>
-<body>
+<body class="text-slate-100 font-sans min-h-screen flex flex-col justify-between antialiased">
 
-  <div class="container">
-    <h1>IsoInstaller beta test</h1>
+  <header class="glass-nav sticky top-0 z-50 px-6 py-4">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
+          <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.625H24V24l-13.051-1.8"/>
+          </svg>
+        </div>
+        <div>
+          <span class="font-bold text-xl tracking-tight text-white block">IsoInstaller</span>
+          <span class="text-xs font-medium text-brand-400 block -mt-1">ISO Media Repository</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="text-xs px-3 py-1.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20 font-medium hidden sm:inline-block">
+          ⚡ Direct Download Links
+        </span>
+      </div>
+    </div>
+  </header>
 
-    <div class="accordion active" id="windowsAccordion">
-      <button class="accordion-header" onclick="toggleAccordion()" aria-expanded="true">
-        <div class="header-title-group">
-          <div class="toggle-box" id="toggleIcon">-</div>
-          <div class="header-text">
-            <span class="main-title">Windows versions</span>
-            <span class="sub-title">all Windows versions</span>
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 w-full flex-grow">
+
+    <section class="text-center py-6 mb-8">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-card text-xs text-slate-300 mb-4">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Windows & Linux ISO Collection</span>
+      </div>
+      <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight glow-title mb-4">
+        Download Operating Systems
+      </h1>
+      <p class="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto font-normal">
+        Select from official Windows installation media or popular Linux distributions.
+      </p>
+    </section>
+
+    <!-- Global Search Bar -->
+    <section class="mb-10 max-w-2xl mx-auto">
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <input 
+          type="text" 
+          id="searchInput" 
+          onkeyup="filterOS()" 
+          placeholder="Search operating system (e.g. Ubuntu, Windows 10, Arch, XP)..." 
+          class="w-full pl-11 pr-4 py-3.5 glass-card rounded-2xl text-sm sm:text-base text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-xl"
+        />
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <div class="glass-card rounded-2xl overflow-hidden mb-4 border border-slate-700/50">
+        <button onclick="toggleAccordion('windowsAccordion')" class="w-full px-6 py-4 flex items-center justify-between text-left bg-slate-800/40 hover:bg-slate-800/70 transition-colors">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.625H24V24l-13.051-1.8"/></svg>
+            </div>
+            <div>
+              <h2 class="font-bold text-xl text-white">Windows Versions</h2>
+              <p class="text-xs text-slate-400">11 Operating Systems Available</p>
+            </div>
+          </div>
+          <svg id="windowsAccordionChevron" class="w-6 h-6 text-slate-400 transition-transform duration-300 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+
+        <div id="windowsAccordion" class="accordion-content p-6" style="max-height: 0px; opacity: 0;">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="windowsGrid">
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="windows 95 legacy">
+              <div>
+                <div class="flex items-start justify-between mb-2">
+                  <h3 class="font-bold text-lg text-white">Windows 95</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">32-bit</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Build 4.00.950 • Introduced the Start Menu.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Windows 95', '34698-OEM-0039682-72135', 'https://archive.org/details/win-95-osr-2')" 
+                class="w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-brand-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="windows 98 legacy">
+              <div>
+                <div class="flex items-start justify-between mb-2">
+                  <h3 class="font-bold text-lg text-white">Windows 98</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">SE ISO</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Second Edition • USB & IE Support.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Windows 98 Second Edition', 'B8MFR-CFTGQ-C9PBW-VHG3J-3R3YW', 'https://archive.org/details/windows-98-se-isofile')" 
+                class="w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-brand-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="windows 2000 nt">
+              <div>
+                <div class="flex items-start justify-between mb-2">
+                  <h3 class="font-bold text-lg text-white">Windows 2000</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">SP4</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Professional NT-based work system.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Windows 2000 Professional SP4', 'RM233-2PRQQ-FR4RH-JP89H-46QYB', 'https://archive.org/details/win2kproiso')" 
+                class="w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-brand-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="windows me millennium">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <h3 class="font-bold text-lg text-white">Windows ME</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">Millennium</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Consumer release with System Restore.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Windows Millennium Edition', 'GKDMG-XV6JQ-BVDB7-WQ7YY-VTQRD', 'https://archive.org/details/windows-me-iso')" 
+                class="w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-brand-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="windows xp">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <h3 class="font-bold text-lg text-white">Windows XP</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">SP3 x86/x64</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Classic Luna UI and high NT stability.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Windows XP Professional SP3', 'CKBQP-KVXGX-H6H4C-MXCBC-HYJC3', 'https://archive.org/details/Windows-XP-SP3-WKEY/disc.JPG')" 
+                class="w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-brand-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="windows vista">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <h3 class="font-bold text-lg text-white">Windows Vista</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-teal-500/10 text-teal-400 border border-teal-500/20">SP2 Aero</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Introduced Aero glass aesthetics & UAC.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Windows Vista Ultimate SP2', 'VMCB9-FDRV6-6CDQM-RV23K-RP8F7', 'https://archive.org/details/windows-vista-ultimate-sp-2-x-64')" 
+                class="w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-brand-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="windows 7">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <h3 class="font-bold text-lg text-white">Windows 7</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">SP1 ISO</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">High performance and clean user interface.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Windows 7 Ultimate SP1', 'FJGCP-4DFJD-GJY49-VJBQ7-HYRR2', 'https://archive.org/details/win-7-ult-sp1-english')" 
+                class="w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-brand-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="windows 8">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <h3 class="font-bold text-lg text-white">Windows 8</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">Metro UI</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Touch-optimized start tiles interface.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Windows 8 Pro', 'XKY4N-23CF5-2FB6C-JJ23K-59DXM', 'https://archive.org/details/windows-8-pro-rtm-english-isos')" 
+                class="w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-brand-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="windows 8.1">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <h3 class="font-bold text-lg text-white">Windows 8.1</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">Update 1</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Restored desktop navigation enhancements.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Windows 8.1 Pro', 'GCRJD-8NW9H-F2CDX-CCM8D-9D6T9', 'https://archive.org/details/win-8.1-english-x-64_202505')" 
+                class="w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-brand-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="windows 10">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <h3 class="font-bold text-lg text-white">Windows 10</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">64-bit</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Highly reliable desktop & gaming platform.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Windows 10 Pro', 'VK7JG-NPHTM-C97JM-9MPGT-3V66T', 'https://www.microsoft.com/en-us/software-download/windows10')" 
+                class="w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-brand-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="windows 11">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <h3 class="font-bold text-lg text-white">Windows 11</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Latest</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Modern taskbar, snap layouts, and TPM 2.0.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Windows 11 Pro', 'VK7JG-NPHTM-C97JM-9MPGT-3V66T', 'https://www.microsoft.com/en-us/software-download/windows11')" 
+                class="w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-brand-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
           </div>
         </div>
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <div class="glass-card rounded-2xl overflow-hidden mb-4 border border-slate-700/50">
+        <button onclick="toggleAccordion('winModsAccordion')" class="w-full px-6 py-4 flex items-center justify-between text-left bg-slate-800/40 hover:bg-slate-800/70 transition-colors">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 012 2v4a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2h4zm0 10a2 2 0 012 2v4a2 2 0 01-2 2H7a2 2 0 01-2-2v-4a2 2 0 012-2h4zM17 4a2 2 0 012 2v4a2 2 0 01-2 2h-4a2 2 0 01-2-2V6a2 2 0 012-2h4zm0 10a2 2 0 012 2v4a2 2 0 01-2 2h-4a2 2 0 01-2-2v-4a2 2 0 012-2h4z" />
+              </svg>
+            </div>
+            <div>
+              <h2 class="font-bold text-xl text-white">Windows Modifications</h2>
+              <p class="text-xs text-slate-400">1 Modification Available</p>
+            </div>
+          </div>
+          <svg id="winModsAccordionChevron" class="w-6 h-6 text-slate-400 transition-transform duration-300 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+
+        <div id="winModsAccordion" class="accordion-content p-6" style="max-height: 0px; opacity: 0;">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="winModsGrid">
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="atlas os windows modification mod gaming custom">
+              <div>
+                <div class="flex items-start justify-between mb-2">
+                  <h3 class="font-bold text-lg text-white">Atlas OS</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">Gaming Mod</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Open-source Windows modification designed for lower latency, higher FPS, and privacy.</p>
+              </div>
+
+              <button 
+                onclick="openDownloadModal('Atlas OS', 'No Product Key Required (Free / Open Source)', 'https://atlasos.net')" 
+                class="w-full py-2.5 px-4 bg-purple-600 hover:bg-purple-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-purple-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <div class="glass-card rounded-2xl overflow-hidden mb-4 border border-slate-700/50">
+        <button onclick="toggleAccordion('linuxAccordion')" class="w-full px-6 py-4 flex items-center justify-between text-left bg-slate-800/40 hover:bg-slate-800/70 transition-colors">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.5a1.5 1.5 0 1 1-2 0V11a1.5 1.5 0 1 1 2 0zm-1-7.5a1.5 1.5 0 1 1 1.5-1.5A1.5 1.5 0 0 1 12 9z"/></svg>
+            </div>
+            <div>
+              <h2 class="font-bold text-xl text-white">Linux Distributions</h2>
+              <p class="text-xs text-slate-400">8 Popular Distributions Available</p>
+            </div>
+          </div>
+          <svg id="linuxAccordionChevron" class="w-6 h-6 text-slate-400 transition-transform duration-300 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+
+        <div id="linuxAccordion" class="accordion-content p-6" style="max-height: 0px; opacity: 0;">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="linuxGrid">
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="ubuntu linux">
+              <div>
+                <div class="flex items-start justify-between mb-2">
+                  <h3 class="font-bold text-lg text-white">Ubuntu</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-orange-500/10 text-orange-400 border border-orange-500/20">LTS Desktop</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">User-friendly desktop environment built on Debian.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Ubuntu Desktop', 'Free / Open Source (GPL License)', 'https://ubuntu.com/download/desktop')" 
+                class="w-full py-2.5 px-4 bg-orange-600 hover:bg-orange-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-orange-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="debian linux">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <h3 class="font-bold text-lg text-white">Debian</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">Stable ISO</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Rock-solid stability for servers and desktops.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Debian GNU/Linux', 'Free / Open Source (DFSG)', 'https://www.debian.org/distrib/')" 
+                class="w-full py-2.5 px-4 bg-orange-600 hover:bg-orange-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-orange-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="fedora linux">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <h3 class="font-bold text-lg text-white">Fedora</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">Workstation</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Cutting-edge open source software and modern GNOME.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Fedora Workstation', 'Free / Open Source (GPL License)', 'https://fedoraproject.org/workstation/download')" 
+                class="w-full py-2.5 px-4 bg-orange-600 hover:bg-orange-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-orange-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="arch linux">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <h3 class="font-bold text-lg text-white">Arch Linux</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">Rolling</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Lightweight and flexible rolling release distro.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Arch Linux', 'Free / Open Source (GPL License)', 'https://archlinux.org/download/')" 
+                class="w-full py-2.5 px-4 bg-orange-600 hover:bg-orange-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-orange-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="linux mint cinnamon">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <h3 class="font-bold text-lg text-white">Linux Mint</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Cinnamon</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Intuitive desktop experience tailored for beginners.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Linux Mint Cinnamon', 'Free / Open Source (GPL License)', 'https://linuxmint.com/download.php')" 
+                class="w-full py-2.5 px-4 bg-orange-600 hover:bg-orange-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-orange-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="manjaro linux">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <h3 class="font-bold text-lg text-white">Manjaro</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-teal-500/10 text-teal-400 border border-teal-500/20">Arch-Based</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Accessible, user-friendly Arch distribution.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Manjaro Linux', 'Free / Open Source (GPL License)', 'https://manjaro.org/download/')" 
+                class="w-full py-2.5 px-4 bg-orange-600 hover:bg-orange-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-orange-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="kali linux security">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <h3 class="font-bold text-lg text-white">Kali Linux</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">Security</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Penetration testing and security auditing OS.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Kali Linux', 'Free / Open Source (GPL License)', 'https://www.kali.org/get-kali/')" 
+                class="w-full py-2.5 px-4 bg-orange-600 hover:bg-orange-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-orange-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+            <div class="os-card-item glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1" data-name="pop os system76 linux">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <h3 class="font-bold text-lg text-white">Pop!_OS</h3>
+                  <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">System76</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Optimized for STEM, gaming, and creative workflows.</p>
+              </div>
+              <button 
+                onclick="openDownloadModal('Pop!_OS System76', 'Free / Open Source (GPL License)', 'https://pop.system76.com/')" 
+                class="w-full py-2.5 px-4 bg-orange-600 hover:bg-orange-500 text-white font-medium text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-orange-500/25">
+                <span>Open Download Link</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="downloadModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-card max-w-md w-full rounded-2xl p-6 border border-slate-700 shadow-2xl relative">
+      <button onclick="closeDownloadModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
 
-      <div class="accordion-content">
-        <div class="os-list">
+      <h3 id="modalTitle" class="text-xl font-bold text-white mb-1">Download Operating System</h3>
+      <p class="text-xs text-slate-400 mb-5">Product key and download link information.</p>
 
-          <!-- LINK: Windows 95 - Open Download Link -->
-          <div class="os-card">
-            <div class="os-info">
-              <div class="os-title">Windows 95</div>
-              <div class="os-desc">Legacy 32-bit OS</div>
-            </div>
-            <a href="https://vik1ngfile.site/f/OqSqIAUb7q" target="_blank" rel="noopener noreferrer" class="btn">
-              Open Download Link
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
-          </div>
-
-          <!-- LINK: Windows 98 - Open Download Link -->
-          <div class="os-card">
-            <div class="os-info">
-              <div class="os-title">Windows 98</div>
-              <div class="os-desc">Legacy 32-bit OS</div>
-            </div>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
-              Open Download Link
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
-          </div>
-
-          <!-- LINK: Windows 2000 - Open Download Link -->
-          <div class="os-card">
-            <div class="os-info">
-              <div class="os-title">Windows 2000</div>
-              <div class="os-desc">NT Architecture</div>
-            </div>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
-              Open Download Link
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
-          </div>
-
-          <!-- LINK: Windows ME - Open Download Link -->
-          <div class="os-card">
-            <div class="os-info">
-              <div class="os-title">Windows ME</div>
-              <div class="os-desc">Millennium Edition</div>
-            </div>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
-              Open Download Link
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
-          </div>
-
-          <!-- LINK: Windows XP - Open Download Link -->
-          <div class="os-card">
-            <div class="os-info">
-              <div class="os-title">Windows XP</div>
-              <div class="os-desc">Service Pack 3</div>
-            </div>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
-              Open Download Link
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
-          </div>
-
-          <!-- LINK: Windows Vista - Open Download Link -->
-          <div class="os-card">
-            <div class="os-info">
-              <div class="os-title">Windows Vista</div>
-              <div class="os-desc">Service Pack 2</div>
-            </div>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
-              Open Download Link
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
-          </div>
-
-          <!-- LINK: Windows 7 - Open Download Link -->
-          <div class="os-card">
-            <div class="os-info">
-              <div class="os-title">Windows 7</div>
-              <div class="os-desc">Service Pack 1</div>
-            </div>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
-              Open Download Link
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
-          </div>
-
-          <!-- LINK: Windows 8 - Open Download Link -->
-          <div class="os-card">
-            <div class="os-info">
-              <div class="os-title">Windows 8</div>
-              <div class="os-desc">Standard Edition</div>
-            </div>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
-              Open Download Link
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
-          </div>
-
-          <!-- LINK: Windows 8.1 - Open Download Link -->
-          <div class="os-card">
-            <div class="os-info">
-              <div class="os-title">Windows 8.1</div>
-              <div class="os-desc">Update 1</div>
-            </div>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
-              Open Download Link
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
-          </div>
-
-          <!-- LINK: Windows 10 - Open Download Link -->
-          <div class="os-card">
-            <div class="os-info">
-              <div class="os-title">Windows 10</div>
-              <div class="os-desc">64-bit / 32-bit ISO</div>
-            </div>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
-              Open Download Link
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
-          </div>
-
-          <!-- LINK: Windows 11 - Open Download Link -->
-          <div class="os-card">
-            <div class="os-info">
-              <div class="os-title">Windows 11</div>
-              <div class="os-desc">Latest 64-bit ISO</div>
-            </div>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
-              Open Download Link
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
-          </div>
-
+      <div class="mb-5 bg-slate-900/90 p-3.5 rounded-xl border border-slate-800">
+        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">Product Key / License</span>
+        <div class="flex items-center justify-between gap-2">
+          <code id="modalKey" class="text-sm font-mono text-brand-300 truncate font-semibold">---</code>
+          <button id="modalCopyBtn" onclick="copyProductKey()" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-medium rounded-lg transition-all shrink-0">
+            Copy Key
+          </button>
         </div>
+      </div>
+
+      <div class="flex items-center justify-end">
+        <a id="modalLink" href="#" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-medium rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-brand-500/20">
+          <span>Proceed to Download</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
       </div>
     </div>
   </div>
 
+  <footer class="glass-nav mt-12 py-6 px-4 text-center text-xs text-slate-400">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>© IsoInstaller Repository. Operating system trademarks belong to their respective owners.</p>
+      <div class="flex items-center gap-4 text-slate-400">
+        <span class="hover:text-white transition-colors cursor-pointer">IsoInstaller v2.0</span>
+      </div>
+    </div>
+  </footer>
+
   <script>
-    function toggleAccordion() {
-      const accordion = document.getElementById('windowsAccordion');
-      const toggleIcon = document.getElementById('toggleIcon');
-      const button = accordion.querySelector('.accordion-header');
-
-      accordion.classList.toggle('active');
-      const isActive = accordion.classList.contains('active');
-
-      toggleIcon.textContent = isActive ? '-' : '+';
-      button.setAttribute('aria-expanded', isActive);
+    function toggleAccordion(id) {
+      const content = document.getElementById(id);
+      const chevron = document.getElementById(id + 'Chevron');
+      if (!content) return;
+      
+      if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+        content.style.maxHeight = '0px';
+        content.style.opacity = '0';
+        if (chevron) chevron.classList.remove('rotate-180');
+      } else {
+        content.style.maxHeight = content.scrollHeight + 'px';
+        content.style.opacity = '1';
+        if (chevron) chevron.classList.add('rotate-180');
+      }
     }
+
+    function filterOS() {
+      const input = document.getElementById('searchInput');
+      const filter = input ? input.value.toLowerCase() : '';
+      const cards = document.querySelectorAll('.os-card-item');
+
+      cards.forEach(card => {
+        const name = card.getAttribute('data-name') || '';
+        const text = card.textContent || '';
+        if (name.toLowerCase().includes(filter) || text.toLowerCase().includes(filter)) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    function copyKeyFromCard(textToCopy, buttonEl) {
+      const tempInput = document.createElement('textarea');
+      tempInput.value = textToCopy;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+
+      try {
+        document.execCommand('copy');
+        const originalText = buttonEl.innerHTML;
+        buttonEl.innerText = "Copied!";
+        buttonEl.classList.add("text-emerald-400", "border-emerald-500/50");
+
+        setTimeout(() => {
+          buttonEl.innerHTML = originalText;
+          buttonEl.classList.remove("text-emerald-400", "border-emerald-500/50");
+        }, 1500);
+      } catch (err) {
+        console.error('Copy failed:', err);
+      }
+      document.body.removeChild(tempInput);
+    }
+
+    function openDownloadModal(title, key, url) {
+      const modal = document.getElementById('downloadModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalKey = document.getElementById('modalKey');
+      const modalLink = document.getElementById('modalLink');
+      const copyBtn = document.getElementById('modalCopyBtn');
+
+      if (modalTitle) modalTitle.innerText = title;
+      if (modalKey) modalKey.innerText = key;
+      if (modalLink) modalLink.href = url || '#';
+
+      if (copyBtn) {
+        if (!key || key.toLowerCase().includes('not found') || key.toLowerCase().includes('free') || key.toLowerCase().includes('open source') || key.toLowerCase().includes('no product key')) {
+          copyBtn.classList.add('hidden');
+        } else {
+          copyBtn.classList.remove('hidden');
+        }
+      }
+
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeDownloadModal() {
+      const modal = document.getElementById('downloadModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function copyProductKey() {
+      const keyText = document.getElementById('modalKey')?.innerText;
+      if (!keyText) return;
+      const btn = document.getElementById('modalCopyBtn');
+      copyKeyFromCard(keyText, btn);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const winAcc = document.getElementById('windowsAccordion');
+      const winModAcc = document.getElementById('winModsAccordion');
+      const linAcc = document.getElementById('linuxAccordion');
+      if (winAcc) {
+        winAcc.style.maxHeight = '0px';
+        winAcc.style.opacity = '0';
+      }
+      if (winModAcc) {
+        winModAcc.style.maxHeight = '0px';
+        winModAcc.style.opacity = '0';
+      }
+      if (linAcc) {
+        linAcc.style.maxHeight = '0px';
+        linAcc.style.opacity = '0';
+      }
+    });
   </script>
 </body>
 </html>
