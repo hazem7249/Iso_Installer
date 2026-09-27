@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IsoInstaller beta test</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 40px;
+      letter-spacing: -0.025em;
+    }
+
+    .accordion {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    }
+
+    .accordion-header {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-main);
+      cursor: pointer;
+      text-align: left;
+      transition: background-color 0.2s ease;
+    }
+
+    .accordion-header:hover {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .header-title-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .toggle-box {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: var(--accent);
+      background-color: rgba(59, 130, 246, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .accordion-header:hover .toggle-box {
+      border-color: var(--accent);
+    }
+
+    .header-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+
+    .sub-title {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
+      border-top: 1px solid transparent;
+    }
+
+    .accordion.active .accordion-content {
+      max-height: 3000px;
+      transition: max-height 0.5s ease-in-out;
+      border-top-color: var(--border-color);
+    }
+
+    .os-list {
+      padding: 16px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .os-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background-color: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+
+    .os-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .os-title {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .os-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--accent);
+      color: white;
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn:hover {
+      background-color: var(--accent-hover);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    @media (max-width: 600px) {
+      .os-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>IsoInstaller beta test</h1>
+
+    <div class="accordion active" id="windowsAccordion">
+      <button class="accordion-header" onclick="toggleAccordion()" aria-expanded="true">
+        <div class="header-title-group">
+          <div class="toggle-box" id="toggleIcon">-</div>
+          <div class="header-text">
+            <span class="main-title">Windows versions</span>
+            <span class="sub-title">all Windows versions</span>
+          </div>
+        </div>
+      </button>
+
+      <div class="accordion-content">
+        <div class="os-list">
+
+          <!-- LINK: Windows 95 - Open Download Link -->
+          <div class="os-card">
+            <div class="os-info">
+              <div class="os-title">Windows 95</div>
+              <div class="os-desc">Legacy 32-bit OS</div>
+            </div>
+            <a href="https://vik1ngfile.site/f/OqSqIAUb7q" target="_blank" rel="noopener noreferrer" class="btn">
+              Open Download Link
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+
+          <!-- LINK: Windows 98 - Open Download Link -->
+          <div class="os-card">
+            <div class="os-info">
+              <div class="os-title">Windows 98</div>
+              <div class="os-desc">Legacy 32-bit OS</div>
+            </div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
+              Open Download Link
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+
+          <!-- LINK: Windows 2000 - Open Download Link -->
+          <div class="os-card">
+            <div class="os-info">
+              <div class="os-title">Windows 2000</div>
+              <div class="os-desc">NT Architecture</div>
+            </div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
+              Open Download Link
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+
+          <!-- LINK: Windows ME - Open Download Link -->
+          <div class="os-card">
+            <div class="os-info">
+              <div class="os-title">Windows ME</div>
+              <div class="os-desc">Millennium Edition</div>
+            </div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
+              Open Download Link
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+
+          <!-- LINK: Windows XP - Open Download Link -->
+          <div class="os-card">
+            <div class="os-info">
+              <div class="os-title">Windows XP</div>
+              <div class="os-desc">Service Pack 3</div>
+            </div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
+              Open Download Link
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+
+          <!-- LINK: Windows Vista - Open Download Link -->
+          <div class="os-card">
+            <div class="os-info">
+              <div class="os-title">Windows Vista</div>
+              <div class="os-desc">Service Pack 2</div>
+            </div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
+              Open Download Link
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+
+          <!-- LINK: Windows 7 - Open Download Link -->
+          <div class="os-card">
+            <div class="os-info">
+              <div class="os-title">Windows 7</div>
+              <div class="os-desc">Service Pack 1</div>
+            </div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
+              Open Download Link
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+
+          <!-- LINK: Windows 8 - Open Download Link -->
+          <div class="os-card">
+            <div class="os-info">
+              <div class="os-title">Windows 8</div>
+              <div class="os-desc">Standard Edition</div>
+            </div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
+              Open Download Link
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+
+          <!-- LINK: Windows 8.1 - Open Download Link -->
+          <div class="os-card">
+            <div class="os-info">
+              <div class="os-title">Windows 8.1</div>
+              <div class="os-desc">Update 1</div>
+            </div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
+              Open Download Link
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+
+          <!-- LINK: Windows 10 - Open Download Link -->
+          <div class="os-card">
+            <div class="os-info">
+              <div class="os-title">Windows 10</div>
+              <div class="os-desc">64-bit / 32-bit ISO</div>
+            </div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
+              Open Download Link
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+
+          <!-- LINK: Windows 11 - Open Download Link -->
+          <div class="os-card">
+            <div class="os-info">
+              <div class="os-title">Windows 11</div>
+              <div class="os-desc">Latest 64-bit ISO</div>
+            </div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="btn">
+              Open Download Link
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleAccordion() {
+      const accordion = document.getElementById('windowsAccordion');
+      const toggleIcon = document.getElementById('toggleIcon');
+      const button = accordion.querySelector('.accordion-header');
+
+      accordion.classList.toggle('active');
+      const isActive = accordion.classList.contains('active');
+
+      toggleIcon.textContent = isActive ? '-' : '+';
+      button.setAttribute('aria-expanded', isActive);
+    }
+  </script>
+</body>
+</html>
